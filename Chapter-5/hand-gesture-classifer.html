@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hand Classification in Browser</title>
+    <script src="https://cdn.jsdelivr.net/npm/handtrackjs@latest/dist/handtrack.min.js"> </script>
+    <!-- <script src="handtrack.main.js"></script> -->
+    <!--  <script type="text/javascript" src="https://raw.githubusercontent.com/victordibia/handtrack.js/master/src/index.js"></script> -->
+</head>
+
+<body>
+    <button id="toggleButton" type="button" disabled>
+        Toggle Video
+    </button>
+    <div id="status">Getting things ready</div>
+    <video class="videobox canvasbox" autoplay="autoplay" id="myvideobox"></video>
+    <canvas id="canvas" class="border canvasbox"></canvas>
+</body>
+<script type="text/javascript">
+if (handTrack) {
+    alert("Module for handtrack.js loaded successfully")
+} else {
+    alert("Something went wrong")
+}
+console.log(handTrack)
+let videoToggleButton = document.getElementById("toggleButton");
+let video = document.getElementById("myvideobox");
+videoToggleButton.addEventListener("click", () => {
+
+    if (navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((streamVideoObject) => {
+                video.srcObject = streamVideoObject;
+            })
+            .catch((error) => {
+                console.log(error)
+                console.log("Something went wrong!");
+            });
+    }
+});
+
+const handimg = document.getElementById("handimageframe");
+let canvas = document.getElementById("canvas");
+let context = canvas.getContext("2d");
+let status = document.getElementById("status");
+
+let isVideo = false;
+let model = null;
+let allPoints = []
+
+
+const modelParams = {
+    flipHorizontal: true, // flip e.g for video  
+    maxNumBoxes: 20, // maximum number of boxes to detect
+    iouThreshold: 0.5, // ioU threshold for non-max suppression
+    scoreThreshold: 0.6, // confidence threshold for predictions.
+}
+
+function startVideo() {
+    handTrack.startVideo(video).then(function(status) {
+        console.log("video started", status);
+        if (status) {
+            status.innerText = "Video started. Now tracking"
+            isVideo = true
+            runDetection()
+        } else {
+            status.innerText = "Please enable video"
+        }
+    });
+}
+
+function toggleVideo() {
+    if (!isVideo) {
+        status.innerText = "Starting video"
+        startVideo();
+    } else {
+        status.innerText = "Stopping video"
+        handTrack.stopVideo(video)
+        isVideo = false;
+        status.innerText = "Video stopped"
+    }
+}
+
+videoToggleButton.addEventListener("click", function() {
+    toggleVideo();
+});
+
+
+function drawPolygon() {
+    context.fillStyle = 'yellow';
+    context.beginPath();
+    context.moveTo(allPoints[0]['x'],allPoints[0]['y']);
+    allPoints.map((coordinate) => {
+        context.lineTo(coordinate.x, coordinate.y);
+    })
+    context.closePath();
+    context.stroke();
+}
+
+
+
+
+function renderPredictions(predictions, canvas, context, mediasource) {
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    canvas.width = mediasource.width;
+    canvas.height = mediasource.height;
+    // console.log("render", mediasource.width, mediasource.height)
+
+    context.save();
+    if (modelParams.flipHorizontal) {
+        context.scale(-1, 1);
+        context.translate(-mediasource.width, 0);
+    }
+    context.drawImage(mediasource, 0, 0, mediasource.width, mediasource.height);
+    context.restore();
+    context.font = '10px Arial';
+
+    // console.log('number of detections: ', predictions.length);
+    for (let i = 0; i < predictions.length; i++) {
+        context.beginPath();
+        context.fillStyle = "rgba(255, 255, 255, 0.6)";
+        context.fillRect(predictions[i].bbox[0], predictions[i].bbox[1] - 17, predictions[i].bbox[2], 17)
+        context.rect(...predictions[i].bbox);
+
+        // draw a dot at the center of bounding box
+
+
+        context.lineWidth = 2;
+        //context.strokeStyle = '#0063FF';
+        context.strokeStyle = "rgb(255,223,0)";
+        context.fillStyle = "#0063FF" // "rgba(244,247,251,1)";
+        let coordinate = {}
+        coordinate['x'] = predictions[i].bbox[0] + (predictions[i].bbox[2] / 2)
+        coordinate['y'] = predictions[i].bbox[1] + (predictions[i].bbox[3] / 2)
+
+        context.fillRect(predictions[i].bbox[0] + (predictions[i].bbox[2] / 2), predictions[i].bbox[1] + (predictions[i].bbox[3] / 2), 5, 5)
+
+        allPoints.push(coordinate)
+        drawPolygon()
+        context.stroke();
+        context.fillText(
+            predictions[i].score.toFixed(3) + ' ' + " | hand",
+            predictions[i].bbox[0] + 5,
+            predictions[i].bbox[1] > 10 ? predictions[i].bbox[1] - 5 : 10);
+    }
+
+    // Write FPS to top left
+    context.font = "bold 12px Arial"
+    context.fillText("[FPS]: " + this.fps, 10, 20)
+}
+
+
+function runDetection() {
+    model.detect(video).then(predictions => {
+        console.log("run detection")
+        if (predictions.length) {
+            console.log("Predictions: ", predictions);
+        }
+        renderPredictions(predictions, canvas, context, video);
+        if (isVideo) {
+            requestAnimationFrame(runDetection);
+            //redraw();
+            console.log(allPoints)
+        }
+    });
+}
+
+function runDetectionImage(img) {
+    model.detect(img).then(predictions => {
+        console.log("run detection images")
+        console.log("Predictions: ", predictions);
+        model.renderPredictions(predictions, canvas, context, img);
+    });
+}
+
+// Load the model.
+handTrack.load(modelParams).then(lmodel => {
+    // detect objects in the image.
+    model = lmodel
+    status.innerText = "Loaded Model!"
+    //runDetectionImage(handimg)
+    videoToggleButton.disabled = false
+});
+</script>
+
+</html>

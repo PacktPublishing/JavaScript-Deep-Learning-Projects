@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Hand Classification in Browser</title>  
+</head>
+
+<body>
+  
+  <div>
+    <button  id="trackbutton" type="button" disabled>
+      Toggle Video
+    </button>
+
+    <div id="updatenote"> loading model ..</div>
+  </div>
+  <video class="videobox canvasbox" autoplay="autoplay" id="myvideo"></video>
+  <canvas id="canvas" class="border canvasbox"></canvas>  
+
+  <script src="https://cdn.jsdelivr.net/npm/handtrackjs@latest/dist/handtrack.min.js"> </script>
+  <script src="js/index.js"></script>
+</body>
+
+</html>
