@@ -89,7 +89,8 @@ videoToggleButton.addEventListener("click", function() {
 
 function drawPolygon() {
     context.fillStyle = 'yellow';
-    context.beginPath();
+    context.beginPath();    
+    // context.moveTo(allPoints[allPoints.length-1]['x'],allPoints[allPoints.length-1]['y']);
     context.moveTo(allPoints[0]['x'],allPoints[0]['y']);
     allPoints.map((coordinate) => {
         context.lineTo(coordinate.x, coordinate.y);
@@ -129,7 +130,7 @@ function renderPredictions(predictions, canvas, context, mediasource) {
 
         context.lineWidth = 2;
         //context.strokeStyle = '#0063FF';
-        context.strokeStyle = "rgb(255,223,0)";
+        context.strokeStyle = "rgba(255,223,0,0.9)";
         context.fillStyle = "#0063FF" // "rgba(244,247,251,1)";
         let coordinate = {}
         coordinate['x'] = predictions[i].bbox[0] + (predictions[i].bbox[2] / 2)
@@ -146,9 +147,7 @@ function renderPredictions(predictions, canvas, context, mediasource) {
             predictions[i].bbox[1] > 10 ? predictions[i].bbox[1] - 5 : 10);
     }
 
-    // Write FPS to top left
     context.font = "bold 12px Arial"
-    context.fillText("[FPS]: " + this.fps, 10, 20)
 }
 
 
