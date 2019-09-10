@@ -1,0 +1,22 @@
+{
+  "name": "object-detection-yolo",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@tensorflow/tfjs": "^0.13.2",
+    "core-js": "^3.2.1",
+    "regenerator-runtime": "^0.13.3",
+    "tfjs-yolo-tiny": "1.0.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-polyfill": "^6.5.0",
+    "babel-preset-env": "^1.6.1",
+    "parcel-bundler": "^1.7.0"
+  },
+  "scripts": {
+    "serve": "parcel src/index.html"
+  }
+}
