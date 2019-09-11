@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="libs/face-api.js"></script>
+    <!-- <script src="commons.js"></script> -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+    <div class="center-content page-container">
+        <div style="position: relative" class="margin">
+            <video onplay="onPlay(this)" id="inputVideo" autoplay muted></video>
+            <canvas id="overlay" />
+            <canvas id="hiddenCanvas" />
+        </div>
+    </div>
+    <script type="text/javascript" src="inference.js"></script>
+</body>
+
+</html>

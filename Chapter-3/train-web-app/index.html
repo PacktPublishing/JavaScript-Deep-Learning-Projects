@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="libs/face-api.min.js"></script>
+    <!-- <script src="commons.js"></script> -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+    <div class="center-content page-container">
+        <div style="position: relative" class="margin">
+            <video onplay="onPlay(this)" id="inputVideo" autoplay muted></video>
+            <canvas id="overlay" />
+            <canvas id="hiddenCanvas" />
+        </div>
+        <p id="errorText" style="color:red"></p>
+        <input id="trainingLabelText" type="text" placeholder="Label" />
+        <button id="trainButton" class="waves-effect waves-light btn" onclick="train()">
+            Train
+        </button><br>
+        <button id="takeScreenshotButton" class="waves-effect waves-light btn" onclick="takeScreenshot()">
+            Capture Training Data
+        </button>
+        <div id="trainingDataBlock" style="display:none">
+            Training Data:
+            <div id="facesContainer"></div>
+        </div>
+    </div>
+    <script type="text/javascript" src="/train.js"></script>
+</body>
+
+</html>
